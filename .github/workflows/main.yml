@@ -1,0 +1,43 @@
+
+name: Skyro-PC
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secure-rdp:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Check Windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Write-Host "Checking Windows runner..."
+          Get-ComputerInfo |
+            Select-Object WindowsProductName, WindowsVersion
+
+      - name: Check required services
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $service = Get-Service -Name TermService
+          Write-Host "Remote Desktop service status: $($service.Status)"
+
+      - name: Check network
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Get-NetIPConfiguration |
+            Select-Object InterfaceAlias, IPv4Address
+
+      - name: Finish
+        shell: pwsh
+        run: |
+          Write-Host "Windows checks completed."
+          Write-Host "This runner is temporary."
+          
